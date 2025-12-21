@@ -105,11 +105,17 @@ table {
   font-size: 13px;
 }
 
-th, td {
+th {
   padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--border);
-  vertical-align: middle; /* Ensures dropdowns align with text */
+  vertical-align: middle; 
+}
+td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle; 
 }
 
 th {
@@ -138,6 +144,7 @@ tr:hover td {
   margin-bottom: 12px;
 }
 
+/* Base input style */
 input {
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
@@ -154,48 +161,24 @@ input:focus {
   background: rgba(0, 0, 0, 0.837);
 }
 
-/* --- MODERN DROPDOWN STYLE --- */
-select.custom-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  
-  /* Custom Arrow SVG (White Chevron) */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 14px;
-  
+/* --- NEW: Search Selection Input Style --- */
+.custom-input {
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't widen the table cell */
   background-color: rgba(0, 0, 0, 0.5);
   color: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 8px 30px 8px 12px; /* Extra right padding for arrow */
+  padding: 8px 12px;      /* Matches button height better */
   font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  cursor: pointer;
   transition: all 0.2s ease;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-select.custom-select:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-select.custom-select:focus {
+.custom-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
   background-color: rgba(0, 0, 0, 0.8);
-}
-
-/* Style the dropdown options (Native, but background color works in Chrome) */
-select.custom-select option {
-  background-color: #1e293b; /* Dark Slate */
-  color: #fff;
-  padding: 10px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25); /* Glow effect matches buttons */
+  outline: none;
 }
 
 /* --- Buttons --- */
