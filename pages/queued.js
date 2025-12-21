@@ -8,6 +8,15 @@ async function load() {
   const list = r.queue || [];
   const types = r.caseTypes || []; 
 
+  // 1. Populate the global Datalist (Hidden list of options)
+  const datalist = document.getElementById("caseTypes");
+  datalist.innerHTML = ""; 
+  types.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    datalist.appendChild(opt);
+  });
+
   list.forEach((item, i) => {
     const tr = document.createElement("tr");
     
@@ -15,40 +24,25 @@ async function load() {
     const tdIndex = document.createElement("td");
     tdIndex.textContent = String(i + 1);
     
-    // Link (Modified to trim first 50 chars)
+    // Link
     const tdLink = document.createElement("td");
-    // Check length to avoid error on short strings
     const displayUrl = item.url.length > 50 ? "..." + item.url.slice(50) : item.url;
     tdLink.textContent = displayUrl;
-    tdLink.title = item.url; // Hover to see full URL
+    tdLink.title = item.url;
     
     // Opened
     const tdOpened = document.createElement("td");
     tdOpened.textContent = fmt(item.openedAt);
     
-    // --- STYLED DROPDOWN ---
+    // --- INPUT: SEARCH SELECTION ---
     const tdType = document.createElement("td");
-    const select = document.createElement("select");
-    select.className = "custom-select"; 
+    const input = document.createElement("input");
     
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "Select Type...";
-    defaultOption.disabled = true;
-    if (!item.caseType || !types.includes(item.caseType)) {
-        defaultOption.selected = true;
-    }
-    select.appendChild(defaultOption);
-
-    types.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      if (item.caseType === t) {
-        opt.selected = true;
-      }
-      select.appendChild(opt);
-    });
+    // Connects input to the datalist above
+    input.setAttribute("list", "caseTypes"); 
+    input.className = "custom-input"; // Uses your new CSS class
+    input.value = item.caseType || "";
+    input.placeholder = "Type to select...";
 
     const tdActions = document.createElement("td");
     tdActions.className = "actions";
@@ -56,15 +50,45 @@ async function load() {
     const btnComplete = document.createElement("button");
     btnComplete.textContent = "Complete";
     btnComplete.className = "btn btn-success";
+    // Check if initial value is valid to enable button
     btnComplete.disabled = !item.caseType || !types.includes(item.caseType);
 
-    select.addEventListener("change", async (e) => {
-        const val = e.target.value;
-        await send({ type: "UPDATE_CASE_TYPE", url: item.url, caseType: val });
-        btnComplete.disabled = (val === "");
+    // --- LOGIC: INLINE AUTO-COMPLETE ---
+    input.addEventListener("input", (e) => {
+        const val = input.value;
+        
+        // Only run auto-complete if user is typing (not deleting)
+        if (!e.inputType || e.inputType === "insertText" || e.inputType === "insertFromPaste") {
+            if (val.length > 0) {
+                // Find the first Case Type that starts with what was typed (Case Insensitive)
+                const match = types.find(t => t.toLowerCase().startsWith(val.toLowerCase()));
+                
+                if (match) {
+                    // Fill the input with the full match
+                    input.value = match;
+                    
+                    // Highlight the part the user hasn't typed yet
+                    // (e.g. Typed "AS", system adds "IN CHECK", highlights "IN CHECK")
+                    input.setSelectionRange(val.length, match.length);
+                }
+            }
+        }
+
+        // Enable "Complete" button immediately if the text matches a valid type
+        btnComplete.disabled = !types.includes(input.value);
     });
 
-    tdType.appendChild(select);
+    // Save change when user clicks away or hits Enter
+    input.addEventListener("change", async () => {
+        if (types.includes(input.value)) {
+            await send({ type: "UPDATE_CASE_TYPE", url: item.url, caseType: input.value });
+        }
+    });
+    
+    // UX: Select all text when clicking into the box (easier to replace)
+    input.addEventListener("focus", () => input.select());
+
+    tdType.appendChild(input);
 
     const btnOpen = document.createElement("button");
     btnOpen.textContent = "Open";
@@ -72,9 +96,11 @@ async function load() {
     btnOpen.addEventListener("click", () => openOrFocusTab(item.url));
     
     btnComplete.addEventListener("click", async () => {
-      if (select.value && types.includes(select.value)) {
+      if (input.value && types.includes(input.value)) {
+        // Ensure the latest value is saved before completing
+        await send({ type: "UPDATE_CASE_TYPE", url: item.url, caseType: input.value });
         await send({ type: "MARK_COMPLETED", url: item.url });
-        await load();
+        await load(); // Refresh list
       } else {
         alert("Please select a valid Case Type.");
       }
@@ -104,6 +130,13 @@ async function load() {
     
     tbody.appendChild(tr);
   });
+
+  // --- AUTO-FOCUS LOGIC ---
+  // Find the first input box and focus it so you can type immediately
+  const firstInput = document.querySelector(".custom-input");
+  if (firstInput) {
+    firstInput.focus();
+  }
 }
 
 document.getElementById("refresh").addEventListener("click", load);
