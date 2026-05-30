@@ -7,7 +7,7 @@ A specialized productivity tool designed to track work case URLs, manage queues,
 ## 🚀 Features
 
 ### 1. Workflow Automation
-* **Auto-Capture:** Automatically detects job details pages on `thejobcompany.in` and adds them to a processing queue.
+* **Auto-Capture:** Automatically detects cases details pages on `https://paragon-eu.amazon.com` and adds them to a processing queue.
 * **Queue Management:** Replaces the Chrome "New Tab" page with your active Case Queue for immediate access.
 * **Duplicate Prevention:** Smart logic prevents the same case link from being added twice.
 
@@ -113,7 +113,7 @@ When exporting data via the Settings page, the CSVs are formatted as follows:
   * `tabs`: To open and manipulate case tabs.
   * `storage`: To save the queue and history locally on your machine.
   * `scripting`: To inject the capture script into the work website.
-  * `host_permissions`: Strictly limited to `https://thejobcompany.in/*`.
+  * `host_permissions`: Strictly limited to `https://paragon-eu.amazon.com/*`.
 
 -----
 
