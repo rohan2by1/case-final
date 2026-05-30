@@ -14,8 +14,8 @@
   ],
 
   "host_permissions": [
-    "https://thejobcompany.co.in/*",
-    "https://thejobcompany.in/*"
+    "https://paragon-eu.amazon.com/*",
+    "https://paragon-na.amazon.com/*"
   ],
 
   "chrome_url_overrides": {
@@ -42,8 +42,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://thejobcompany.co.in/frontend/job_details*",
-        "https://thejobcompany.in/frontend/job_details*"
+        "https://paragon-na.amazon.com/hz/entity?entityType*",
+        "https://paragon-eu.amazon.com/hz/entity?entityType*"
       ],
       "js": ["content/capture.js"],
       "run_at": "document_start"
